@@ -1,0 +1,102 @@
+timestamp,module,user,score,session_id
+2025-03-23 10:30:40,2. Requirements Management,M1,2,53ce311a-0ed9-41d1-a8f9-eb4c79e074c7
+2025-03-23 10:32:58,1. iRIS Product Introduction,What's the temperature on Mars oh I wanted,2,79fa10f5-e539-4a88-b045-6b11ea80891a
+2025-03-23 10:33:20,2. Requirements Management,What's the temperature on Mars oh I wanted,1,79fa10f5-e539-4a88-b045-6b11ea80891a
+2025-03-23 10:36:56,1. iRIS Product Introduction,Angel,1,f4e3585d-bb32-4823-b2f1-e4a4d765add8
+2025-03-23 10:50:07,1. iRIS Product Introduction,Angel,2,be765c5e-65d1-4b18-a6f8-5d306d21a7b2
+2025-03-24 06:58:00,1. iRIS Product Introduction,2,2,c6fc04b5-939e-4f76-8701-e0f5d53ae0d7
+2025-03-24 07:07:50,1. iRIS Product Introduction,3,1,235d9bbf-bc69-4375-9bba-c785fd0bb200
+2025-03-24 07:11:58,1. iRIS Product Introduction,3,2,93a7ab4b-e567-4167-916e-56c84f6e13a7
+2025-03-24 07:25:16,1. iRIS Product Introduction,3,2,f30ca7d4-e3b2-4bb2-8d3b-6c06201d2039
+2025-03-24 07:25:54,1. iRIS Product Introduction,3,1,f30ca7d4-e3b2-4bb2-8d3b-6c06201d2039
+2025-03-24 07:32:45,1. iRIS Product Introduction,3,2,e3bfca3b-f042-4906-a6d9-d2ab26dc892e
+2025-03-24 07:33:12,2. Requirements Management,3,1,e3bfca3b-f042-4906-a6d9-d2ab26dc892e
+2025-03-24 07:38:58,1. iRIS Product Introduction,3,1,caa12d71-e675-4a2f-b083-3cae0c9a0c99
+2025-03-24 07:41:06,1. iRIS Product Introduction,3,2,6f84ec87-a1d8-43be-8317-713741d50cb5
+2025-03-24 07:47:57,1. iRIS Product Introduction,3,1,e9509a1c-3c6e-4680-9607-659e31219cd1
+2025-03-24 07:54:39,1. iRIS Product Introduction,3,2,f912738d-cfe9-4353-b068-82a25f3cddcf
+2025-03-26 10:25:01,1. iRIS Product Introduction,3,1,b7a1fc62-7a7c-47ba-855a-0a3a6b4f5ff8
+2025-03-27 10:45:42,1. iRIS Product Introduction,What is this,2,e80b7155-6063-4b47-b703-0f66048814ac
+2025-03-27 10:48:10,1. iRIS Product Introduction,3,1,ca2cd3e1-38eb-4364-8e09-b7724f0e4564
+2025-03-28 10:31:23,1. iRIS Product Introduction,3,1,d5153cd3-16d3-426a-b8e8-279b5412b5d1
+2025-03-29 14:45:13,1. iRIS Product Introduction,3,1,7418e52c-a1f2-4018-bccc-c661bd948add
+2025-03-29 15:04:37,1. iRIS Product Introduction,Anonymous,4,faa6afbd-32e9-4502-b7b1-8deb3ce4015e
+2025-03-29 15:17:17,1. iRIS Product Introduction,Anonymous,1,67c3e122-ed15-4cee-8965-32201cb3c4db
+2025-03-29 15:17:28,whiskey,Anonymous,2,67c3e122-ed15-4cee-8965-32201cb3c4db
+2025-03-29 15:18:17,whiskey,Anonymous,0,67c3e122-ed15-4cee-8965-32201cb3c4db
+2025-03-29 15:18:53,whiskey,Anonymous,3,67c3e122-ed15-4cee-8965-32201cb3c4db
+2025-03-29 15:20:11,whiskey,Anonymous,1,e9fee1cd-1b0a-44dd-898c-1005dcb2e330
+2025-03-29 15:24:55,whiskey,Anonymous,2,5812a2b8-2d91-4c90-b112-81961955856f
+2025-03-29 15:25:27,whiskey,Anonymous,3,5812a2b8-2d91-4c90-b112-81961955856f
+2025-03-29 15:31:56,whiskey,Anonymous,1,4b5606e9-5b8f-4f98-976e-9271cb1391f6
+2025-03-29 15:32:20,whiskey,Anonymous,2,4b5606e9-5b8f-4f98-976e-9271cb1391f6
+2025-03-29 15:32:58,whiskey,Anonymous,2,4b5606e9-5b8f-4f98-976e-9271cb1391f6
+2025-03-29 15:33:29,whiskey,Anonymous,3,4b5606e9-5b8f-4f98-976e-9271cb1391f6
+2025-03-29 15:36:15,whiskey,Anonymous,3,03452b78-4738-4aa2-869a-4a258307d71a
+2025-03-29 15:37:22,whiskey,Anonymous,2,dddb5da5-7378-4d4a-9c21-91b5b07b6c38
+2025-03-29 15:37:49,whiskey,Anonymous,3,dddb5da5-7378-4d4a-9c21-91b5b07b6c38
+2025-03-29 15:53:48,1. iRIS Product Introduction,Anonymous,1,4e28f67e-5c6a-4978-be38-c89b1e65f231
+2025-03-29 15:56:55,whiskey,Anonymous,4,61a00fdf-e1ca-4619-bf4d-d92f90917745
+2025-03-29 16:19:42,whiskey,Anonymous,2,fb26cc2a-107c-4536-9a93-367c758b543f
+2025-03-29 16:20:15,whiskey,Anonymous,1,fb26cc2a-107c-4536-9a93-367c758b543f
+2025-03-29 16:20:46,whiskey,Anonymous,4,fb26cc2a-107c-4536-9a93-367c758b543f
+2025-03-30 13:14:58,whiskey,Anonymous,2,e77a3d90-06a9-49c1-a054-98b838acc228
+2025-03-30 13:30:51,whiskey,Anonymous,2,10e40ab6-0fb6-4962-bf29-dc3af1fbe5f7
+2025-03-30 13:32:00,whiskey,Anonymous,4,10e40ab6-0fb6-4962-bf29-dc3af1fbe5f7
+2025-03-30 13:54:36,1. iRIS Product Introduction,2,2,ef0aa641-7f3a-46d3-9bb3-b0127d622f4c
+2025-03-30 13:56:17,1. iRIS Product Introduction,the file i just uploaded,1,c3c531cb-efe3-4469-b968-57e447f67a01
+2025-03-30 13:56:34,2. Requirements Management,the file i just uploaded,2,c3c531cb-efe3-4469-b968-57e447f67a01
+2025-03-30 14:11:50,1. iRIS Product Introduction,M1,2,6ac43abe-0f87-45ea-8ed7-a5ae98f7b11d
+2025-03-30 14:13:48,2. Requirements Management,M1,1,6ac43abe-0f87-45ea-8ed7-a5ae98f7b11d
+2025-03-30 14:22:00,whiskey,Anonymous,3,201ae9f5-fac1-46d6-9415-85a00d3aa2ec
+2025-03-30 14:22:43,whiskey,Anonymous,0,201ae9f5-fac1-46d6-9415-85a00d3aa2ec
+2025-03-30 14:33:19,whiskey,angel.martinez@celeris-systems.com,3,
+2025-03-30 14:41:53,whiskey,M1,4,
+2025-03-30 14:42:18,whiskey,M1,2,
+2025-03-30 14:42:50,whiskey,M1,3,
+2025-03-30 14:44:35,whiskey,M1,3,
+2025-03-30 14:45:08,whiskey,M1,3,
+2025-03-30 14:47:34,whiskey,What's the temperature on Mars,4,
+2025-03-30 14:47:57,whiskey,What's the temperature on Mars,0,
+2025-03-30 14:51:02,whiskey,3,3,
+2025-03-30 14:52:14,whiskey,What's the temperature on Mars,4,
+2025-03-30 14:52:45,whiskey,What's the temperature on Mars,3,
+2025-03-30 14:54:06,whiskey,M1,4,
+2025-03-30 14:57:32,whiskey,M1,3,
+2025-03-30 14:58:07,whiskey,M1,3,
+2025-03-30 14:58:58,whiskey,M1,3,
+2025-03-30 14:59:34,whiskey,M1,4,
+2025-03-30 15:03:05,whiskey,M1,3,
+2025-03-30 15:05:21,whiskey,M1,3,
+2025-03-30 15:05:57,whiskey,M1,3,
+2025-03-30 15:08:54,whiskey,What's the temperature on Mars,3,
+2025-03-30 15:09:30,whiskey,What's the temperature on Mars,3,
+2025-03-30 15:14:26,whiskey,What's the temperature on Mars,3,
+2025-03-30 15:15:10,whiskey,What's the temperature on Mars,4,
+2025-03-30 15:17:26,whiskey,M1,3,
+2025-03-30 15:18:27,whiskey,M1,4,
+2025-03-30 15:19:14,whiskey,M1,4,
+2025-03-30 15:19:45,whiskey,M1,5,
+2025-03-30 15:20:18,whiskey,M1,3,
+2025-03-30 15:20:45,whiskey,M1,1,
+2025-03-30 15:26:45,whiskey,M1,3,
+2025-03-30 15:34:21,whiskey,What's the temperature on Mars,4,
+2025-03-30 15:35:02,whiskey,What's the temperature on Mars,4,
+2025-03-30 15:37:57,whiskey,,4,
+2025-03-30 15:38:29,whiskey,,3,
+2025-03-30 15:42:57,whiskey,,4,
+2025-03-30 16:45:48,whiskey,,3,
+2025-03-30 16:46:22,whiskey,,3,
+2025-03-31 18:16:34,1. iRIS Product Introduction,What's the temperature on Mars,2,627a825b-c290-4a1a-8861-dd689e0b9d14
+2025-03-31 18:18:10,whiskey,What's the temperature on Mars,4,627a825b-c290-4a1a-8861-dd689e0b9d14
+2025-03-31 18:18:41,whiskey,What's the temperature on Mars,3,627a825b-c290-4a1a-8861-dd689e0b9d14
+2025-03-31 20:38:33,1. iRIS Product Introduction,3,2,3827581d-08ae-4f7e-93f5-160f90283ddc
+2025-04-01 09:34:08,whiskey,,4,
+2025-04-03 08:40:34,1. iRIS Product Introduction,Angel,1,8e4e3840-8bf9-401d-aea7-8f80a60befaa
+2025-04-03 08:45:42,whiskey,Angel,3,8e4e3840-8bf9-401d-aea7-8f80a60befaa
+2025-04-03 08:52:12,whiskey,Angel,2,8e4e3840-8bf9-401d-aea7-8f80a60befaa
+2025-04-03 08:52:50,whiskey,Angel,3,8e4e3840-8bf9-401d-aea7-8f80a60befaa
+2025-04-03 09:28:17,1. iRIS Product Introduction,Angel,1,36776943-3a6b-421e-aa7d-2706b64e3f16
+2025-04-03 09:30:34,whiskey,Angel,4,36776943-3a6b-421e-aa7d-2706b64e3f16
+2025-04-06 00:08:15,whiskey,,3,
+2025-04-06 11:18:24,1. iRIS Product Introduction,3,10,b99075d1-d0e3-4c52-b1d2-b09833f1e572
