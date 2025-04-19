@@ -1,0 +1,12 @@
+streamlit
+openai  # If using OpenAI API
+streamlit-lottie
+PyPDF2
+pandas
+matplotlib
+pdfplumber
+streamlit-javascript
+scipy
+xlrd
+scikit-learn
+openpyxl
