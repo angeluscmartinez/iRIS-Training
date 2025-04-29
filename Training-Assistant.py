@@ -373,7 +373,6 @@ if "summary_generated" not in st.session_state:
 
 # Show the "Generate Training Summary" button (only if not already generated)
 if not st.session_state.summary_generated:
-    st.markdown("#### 📚 Generate Quick Summary")
     if st.button("Generate Training Summary", key="generate_summary_button"):
         st.session_state["auto_generated_prompt"] = "Generate a training summary based on the material."
 
