@@ -405,7 +405,7 @@ with st.container():
         "Ask about the training material...",
         key="bottom_strategic_prompt",
         label_visibility="collapsed",
-        placeholder="e.g. What are the key risks?",
+        placeholder="e.g. What are the main points?",
     )
     send = st.button("📩", key="bottom_send_button")
     st.markdown('</div>', unsafe_allow_html=True)
