@@ -13,8 +13,8 @@ st.set_page_config(page_title="iRIS Training Assistant", layout="wide")
 
 TRAINING_DIR = "training"
 SUPPORTED_TYPES = [".pdf"]
-QUESTIONS_PER_SESSION = 10
-PASSING_SCORE = 7
+QUESTIONS_PER_SESSION = 2
+PASSING_SCORE = 1
 
 client = OpenAI(api_key=st.secrets["API_key"])
 
@@ -23,44 +23,64 @@ def get_base64_image(image_path):
     with open(image_path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-def extract_text_from_pdf(filepath):
+def extract_text_by_page(filepath):
     with open(filepath, "rb") as f:
         reader = PyPDF2.PdfReader(f)
-        return "\n".join([p.extract_text() for p in reader.pages if p.extract_text()])
+        pages = []
+        for i, page in enumerate(reader.pages):
+            text = page.extract_text()
+            if text:
+                pages.append({"page": i + 1, "text": text})
+        return pages
 
-def generate_questions_from_text(text):
+def generate_questions_from_text(pages):
     import json, re
+    combined_text = "\n".join([f"[Page {p['page']}]\n{p['text']}" for p in pages])
     prompt = f"""
 You are a training assistant. Based on the training material below, generate {QUESTIONS_PER_SESSION} quiz questions.
-Only include two formats:
+
+**Exclude** any questions related to:
+- Company address
+- Website URLs
+- Copyright notices
+- Page headers or footers
+- Metadata or branding content
+
+Instead, focus on **concepts, insights, reasoning, and practical application** of the subject matter.
+Each question must be meaningful and test true comprehension, not rote memorization.
+
+Only use these two formats:
 1. Multiple choice with 4 options (A, B, C, D)
-2. True or False (only two options: "True", "False")
+2. True or False with options ["True", "False"]
 
-Each question must include:
+Each item must include:
 - "question": the question text
-- "type": either "multiple_choice" or "true_false"
-- "options": a list of answer options
-- "answer": the correct answer (must match one of the options exactly)
+- "type": "multiple_choice" or "true_false"
+- "options": list of answer choices
+- "answer": the correct answer (must match one of the options)
+- "page": the page number the question was derived from
 
-Format your response as a raw JSON array—no markdown, no code block.
+Return the result as a **raw JSON array only** (no explanations, no markdown).
 
 [
   {{
     "question": "What is the capital of France?",
     "type": "multiple_choice",
     "options": ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"],
-    "answer": "C. Paris"
+    "answer": "C. Paris",
+    "page": 2
   }},
   {{
     "question": "The Earth orbits the Sun.",
     "type": "true_false",
     "options": ["True", "False"],
-    "answer": "True"
+    "answer": "True",
+    "page": 1
   }}
 ]
 
-Text:
-{text[:5000]}
+Training Text:
+{combined_text[:5000]}
 """
     response = client.chat.completions.create(
         model="gpt-4-turbo",
@@ -107,25 +127,59 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Initialize flags
+if "name_warning" not in st.session_state:
+    st.session_state["name_warning"] = False
+if "name_ready" not in st.session_state:
+    st.session_state["name_ready"] = False
+if "summary_generated" not in st.session_state:
+    st.session_state["summary_generated"] = False  # <-- add this line
+
+
 # --- Module & User Selection ---
 modules = sorted([m for m in os.listdir(TRAINING_DIR) if os.path.isdir(os.path.join(TRAINING_DIR, m))])
 if "selected_module" not in st.session_state:
     st.session_state.selected_module = modules[0]
 
 # --- User Name Input and Persistence ---
-if "user_name" not in st.session_state:
-    name_input = st.sidebar.text_input("Enter Your Name", key="name_input")
-    submit_name = st.sidebar.button("✅ Submit")
-
-    if submit_name and name_input:
-        st.session_state["user_name"] = name_input
+# --- User Name Input and Persistence ---
+# --- User Name Input and Persistence ---
+def set_user_name():
+    name = st.session_state.get("name_input", "").strip()
+    if name:
+        st.session_state["user_name"] = name
         st.session_state["session_id"] = str(uuid.uuid4())
-        st.rerun()
-    elif submit_name and not name_input:
+        st.session_state["name_ready"] = True  # trigger for rerun
+    else:
+        st.session_state["name_warning"] = True
+
+# Initialize flags
+if "name_warning" not in st.session_state:
+    st.session_state["name_warning"] = False
+if "name_ready" not in st.session_state:
+    st.session_state["name_ready"] = False
+
+# Show input field only if not set
+if "user_name" not in st.session_state:
+    st.sidebar.text_input(
+        "Enter Your Name",
+        key="name_input",
+        on_change=set_user_name,
+        placeholder="Type your name and press Enter"
+    )
+
+    if st.session_state.name_warning:
         st.sidebar.warning("⚠️ Please enter your name before submitting.")
 
-else:
+# React to name submission and rerun
+if st.session_state.get("name_ready", False):
+    st.session_state.name_ready = False
+    st.rerun()
+
+# Show current name if set
+if "user_name" in st.session_state:
     st.sidebar.markdown(f"👤 **User:** {st.session_state['user_name']}")
+
 
 # --- Banner (always show) ---
 image_path = "picture1.png"
@@ -143,7 +197,6 @@ st.markdown(f"""
 
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
-#st.markdown("---")  # horizontal rule across the full width
 
 if "user_name" not in st.session_state:
     st.stop()
@@ -214,12 +267,18 @@ with st.sidebar:
                 st.session_state["show_video"] = True
                 st.rerun()
 
+    # 📌 Always show Module Summary button
+    if st.button("🧠 Module Summary", key="generate_summary_sidebar"):
+        st.session_state["auto_generated_prompt"] = "Generate a training summary based on the material."
+        st.session_state.summary_generated = True  # Mark as generated (optional)
+        st.rerun()
+
     if not st.session_state.questions:
         if st.button("📋 Start Quiz", key="start_quiz_btn"):
             st.session_state.questions_loading = True
             with st.spinner("AI is generating questions..."):
-                pdf_text = extract_text_from_pdf(pdf_path)
-                questions = generate_questions_from_text(pdf_text)
+                pages = extract_text_by_page(pdf_path)
+                questions = generate_questions_from_text(pages)
                 if questions:
                     st.session_state.questions = questions
                     st.session_state.current_q = 0
@@ -262,10 +321,15 @@ if mp4_path:
 quiz_ready = st.session_state.questions and st.session_state.current_q < len(st.session_state.questions)
 
 if quiz_ready:
+    # ✅ Show live score before the question
+    correct = sum(st.session_state.scores)
+    attempted = len(st.session_state.scores)
+    st.markdown(f"🧮 **Score: {correct} / {attempted} correct**")
+    
     # --- Show Current Question ---
     question = st.session_state.questions[st.session_state.current_q]
     with st.chat_message("assistant"):
-        st.markdown(f"**Question {st.session_state.current_q + 1}:** {question['question']}")
+        st.markdown(f"**Question {st.session_state.current_q + 1} (Page {question.get('page', '?')}):** {question['question']}")
 
     if not st.session_state.feedback_shown:
         with st.chat_message("user"):
@@ -302,151 +366,203 @@ if st.session_state.quiz_complete:
     with st.chat_message("assistant"):
         total_score = sum(st.session_state.scores)
 
-        # ✅ Save progress only once per quiz session
+        # ✅ Save progress only once
         if not st.session_state.get("progress_saved", False):
             try:
                 save_progress_global(TRAINING_DIR, current_module, st.session_state["user_name"], total_score)
                 st.session_state["progress_saved"] = True
             except Exception as e:
                 st.error(f"⚠️ Failed to save progress: {e}")
+
+        # Separate outcomes
         if st.session_state.passed_quiz:
             st.markdown("🎉 **Congratulations! You passed the quiz!** 🎉")
+
             trophy_path = os.path.join(module_path, "trophy.png")
             if os.path.exists(trophy_path):
                 with open(trophy_path, "rb") as img_file:
                     image = Image.open(img_file)
                     image = image.resize((300, int(300 * image.height / image.width)))
                     st.image(image, caption="Well done!")
+
             st.markdown("🎯 You may now proceed to the next training module.")
+
+            # Review missed questions if any
+            missed = [
+                (i, q, user_answer)
+                for i, (score, q, user_answer) in enumerate(
+                    zip(st.session_state.scores, st.session_state.questions, st.session_state.answers)
+                )
+                if score == 0
+            ]
+            if missed:
+                st.markdown("### ❌ Review Missed Questions")
+                for i, q, user_answer in missed:
+                    with st.expander(f"Question {i+1}: {q['question']}"):
+                        st.markdown(f"- **Your answer:** {user_answer}")
+                        st.markdown(f"- **Correct answer:** {q['answer']}")
+
+            # Continue button
+            if st.button("✅ Continue"):
+                try:
+                    current_index = modules.index(current_module)
+                    if current_index < len(modules) - 1:
+                        st.session_state.selected_module = modules[current_index + 1]
+                    else:
+                        st.info("✅ You’ve completed all modules.")
+                except ValueError:
+                    st.warning("⚠️ Could not determine next module.")
+
+                for key in default_quiz_state:
+                    st.session_state[key] = default_quiz_state[key]
+                st.session_state["progress_saved"] = False
+                st.session_state["chat_history"] = []
+                st.rerun()
+
         else:
-            st.markdown("🔁 You missed 3 or more. A new quiz has been generated for you.")
-            pdf_text = extract_text_from_pdf(pdf_path)
-            st.session_state.questions = generate_questions_from_text(pdf_text)
-            st.session_state.current_q = 0
-            st.session_state.answers = []
-            st.session_state.scores = []
-            st.session_state.feedback_shown = False
-            st.session_state.last_correct = None
-            st.session_state.quiz_complete = False
-            st.session_state.passed_quiz = False
-            st.rerun()
-##############
-        # --- Review Mode for Missed Questions ---
-        missed = [
-            (i, q, user_answer)
-            for i, (score, q, user_answer) in enumerate(
-                zip(st.session_state.scores, st.session_state.questions, st.session_state.answers)
-            )
-            if score == 0
-        ]
+            st.markdown("🔁 You missed 1 or more questions. Please review below before retrying.")
 
-        if missed:
-            st.markdown("### ❌ Review Missed Questions")
-            for i, q, user_answer in missed:
-                with st.expander(f"Question {i+1}: {q['question']}"):
-                    st.markdown(f"- **Your answer:** {user_answer}")
-                    st.markdown(f"- **Correct answer:** {q['answer']}")
+            missed = [
+                (i, q, user_answer)
+                for i, (score, q, user_answer) in enumerate(
+                    zip(st.session_state.scores, st.session_state.questions, st.session_state.answers)
+                )
+                if score == 0
+            ]
+            if missed:
+                st.markdown("### ❌ Review Missed Questions")
+                for i, q, user_answer in missed:
+                    with st.expander(f"Question {i+1}: {q['question']}"):
+                        st.markdown(f"- **Your answer:** {user_answer}")
+                        st.markdown(f"- **Correct answer:** {q['answer']}")
 
-##################
-    if st.button("✅ Continue"):
-        try:
-            current_index = modules.index(current_module)
-            if current_index < len(modules) - 1:
-                st.session_state.selected_module = modules[current_index + 1]
-            else:
-                st.info("✅ You’ve completed all modules.")
-        except ValueError:
-            st.warning("⚠️ Could not determine next module.")
+            if st.button("🔁 Retry Quiz"):
+                pdf_pages = extract_text_by_page(pdf_path)
+                st.session_state.questions = generate_questions_from_text(pdf_pages)
+                st.session_state.current_q = 0
+                st.session_state.answers = []
+                st.session_state.scores = []
+                st.session_state.feedback_shown = False
+                st.session_state.last_correct = None
+                st.session_state.quiz_complete = False
+                st.session_state.passed_quiz = False
+                st.session_state.progress_saved = False
+                st.rerun()
 
-        # 🔄 Reset quiz state and progress flag
-        for key in default_quiz_state:
-            st.session_state[key] = default_quiz_state[key]
-        st.session_state["progress_saved"] = False
-        st.rerun()
+# Handle summary generation
+if "auto_generated_prompt" in st.session_state:
+    st.session_state.last_prompt = st.session_state.pop("auto_generated_prompt")
+    st.session_state.chat_history.append(("user", st.session_state.last_prompt))
+    st.session_state.awaiting_gpt = True
+    st.rerun()
 
-# --- Persistent Strategic Chat at Bottom of Page ---
+# --- Chat State Initialization ---
+import uuid
+
+# --- Init Chat State ---
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "last_prompt" not in st.session_state:
+    st.session_state.last_prompt = None
+if "awaiting_gpt" not in st.session_state:
+    st.session_state.awaiting_gpt = False
+if "chat_input_key" not in st.session_state:
+    st.session_state.chat_input_key = str(uuid.uuid4())
 
-if "summary_generated" not in st.session_state:
-    st.session_state.summary_generated = False
-
-# Show the "Generate Training Summary" button (only if not already generated)
-if not st.session_state.summary_generated:
-    if st.button("Generate Training Summary", key="generate_summary_button"):
-        st.session_state["auto_generated_prompt"] = "Generate a training summary based on the material."
-
-# Display chat history
+# --- Show chat messages (top-down) ---
 for role, message in st.session_state.chat_history:
     with st.chat_message(role):
         st.markdown(message)
 
-# Chat input + send button (sticky bottom)
-st.markdown("""
-    <style>
-    .chat-input-container {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        position: -webkit-sticky;
-        position: sticky;
-        bottom: 0;
-        background: white;
-        padding: 1rem 0;
-        z-index: 999;
-        border-top: 1px solid #eee;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-with st.container():
-    st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
-    bottom_user_prompt = st.text_input(
-        "Ask about the training material...",
-        key="bottom_strategic_prompt",
-        label_visibility="collapsed",
-        placeholder="e.g. What are the main points?",
-    )
-    send = st.button("📩", key="bottom_send_button")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# --- Handle sending logic ---
-prompt_to_send = None
-
-# Priority 1: If user clicked Generate Training Summary
-if "auto_generated_prompt" in st.session_state:
-    prompt_to_send = st.session_state.pop("auto_generated_prompt")
-    st.session_state.summary_generated = True  # Hide the button after this
-
-# Priority 2: If user manually entered something and clicked send
-elif send and bottom_user_prompt:
-    prompt_to_send = bottom_user_prompt
-
-if prompt_to_send:
-    # Append user message
-    st.session_state.chat_history.append(("user", prompt_to_send))
-
+# --- GPT logic: generate reply if needed ---
+if st.session_state.awaiting_gpt and st.session_state.last_prompt:
     with st.spinner("Thinking..."):
-        pdf_text = extract_text_from_pdf(pdf_path)
-        strategic_prompt = f"""
+        pdf_pages = extract_text_by_page(pdf_path)
+        context = "\n".join([f"[Page {p['page']}]\n{p['text']}" for p in pdf_pages])
+
+        prompt = f"""
 You are a strategic training advisor. Based on the training material below, answer the user's question.
 
 Training Material:
-{pdf_text[:5000]}
+{context[:5000]}
 
 User's Question:
-{prompt_to_send}
+{st.session_state.last_prompt}
 
 Provide a clear, strategic, and actionable response.
 """
-        response = client.chat.completions.create(
-            model="gpt-4-turbo",
-            messages=[{"role": "user", "content": strategic_prompt}]
-        )
-        reply = response.choices[0].message.content.strip()
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4-turbo",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            reply = response.choices[0].message.content.strip()
+        except Exception as e:
+            reply = f"⚠️ GPT failed to respond: {e}"
 
-    # Append GPT reply
     st.session_state.chat_history.append(("assistant", reply))
-
-    # Rerun to refresh chat and hide button if needed
+    st.session_state.awaiting_gpt = False
+    st.session_state.last_prompt = None
+    st.session_state.chat_input_key = str(uuid.uuid4())  # Resets input box
     st.rerun()
+
+# --- Chat Input Always Anchored at Bottom ---
+with st.container():
+    st.markdown('<div class="chat-input-wrapper">', unsafe_allow_html=True)
+
+    user_prompt = st.text_input(
+        "Ask about the training material...",
+        key=st.session_state.chat_input_key,
+        label_visibility="collapsed",
+        placeholder="e.g. What are the main points?"
+    )
+
+    if st.button("Send"):
+        if user_prompt.strip():
+            st.session_state.last_prompt = user_prompt.strip()
+            st.session_state.chat_history.append(("user", user_prompt.strip()))
+            st.session_state.awaiting_gpt = True
+            st.session_state.chat_input_key = str(uuid.uuid4())
+            st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+# --- GPT Handling ---
+if st.session_state.awaiting_gpt and st.session_state.last_prompt:
+    with st.spinner("Thinking..."):
+        try:
+            pdf_pages = extract_text_by_page(pdf_path)
+            context = "\n".join([f"[Page {p['page']}]\n{p['text']}" for p in pdf_pages])
+            strategic_prompt = f"""
+You are a strategic training advisor. Based on the training material below, answer the user's question.
+
+Training Material:
+{context[:5000]}
+
+User's Question:
+{st.session_state.last_prompt}
+
+Provide a clear, strategic, and actionable response.
+"""
+            response = client.chat.completions.create(
+                model="gpt-4-turbo",
+                messages=[{"role": "user", "content": strategic_prompt}]
+            )
+            reply = response.choices[0].message.content.strip()
+        except Exception as e:
+            reply = f"⚠️ GPT failed to respond: {e}"
+
+    # Display response, then clear
+    st.session_state.chat_history.append(("assistant", reply))
+    st.session_state.awaiting_gpt = False
+    st.session_state.last_prompt = None
+    st.session_state.bottom_strategic_prompt = ""
+    st.session_state.gpt_reply = reply
+
+    # Show assistant message once before wiping history
+    st.chat_message("assistant").markdown(reply)
+
+    # Optionally clear history after 2 messages
+    st.session_state.chat_history = []
+
