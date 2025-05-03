@@ -288,6 +288,13 @@ with st.sidebar:
                 else:
                     st.session_state.questions_loading = False
                     st.error("❌ No questions were generated. Please try again.")
+                    st.markdown("""
+                        <script>
+                            window.scrollTo(0, document.body.scrollHeight);
+                        </script>
+                    """, unsafe_allow_html=True)
+
+                    st.rerun()
 
 if mp4_path:
     if "show_video" not in st.session_state:
